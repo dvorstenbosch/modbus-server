@@ -1,3 +1,9 @@
+# Fork
+
+Added option to mirror the holding registers to input registers.
+
+This allows an external tool to update the values of input registers for simulation purposes.
+
 # Quick reference
 
 Maintained by: [Michael Oberdorf IT-Consulting](https://www.oberdorf-itc.de/)
