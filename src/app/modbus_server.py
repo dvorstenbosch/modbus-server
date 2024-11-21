@@ -63,6 +63,7 @@ def run_server(
     coils: Optional[dict] = None,
     holding_registers: Optional[dict] = None,
     input_registers: Optional[dict] = None,
+    mirror_holding_registers_as_inputs: bool = False,
 ):
     """
     Run the modbus server(s)
@@ -112,16 +113,19 @@ def run_server(
         log.debug("set all registers to 0x00")
         hr = ModbusSequentialDataBlock.create()
 
-    log.debug("Initialize input registers")
-    if isinstance(input_registers, dict) and input_registers:
-        # log.debug('using dictionary from configuration file:')
-        # log.debug(inputRegisters)
-        ir = ModbusSparseDataBlock(input_registers)
+    if mirror_holding_registers_as_inputs:
+        ir = hr
     else:
-        # log.debug('set all registers to 0xdd')
-        # ir = ModbusSequentialDataBlock(0x00, [0xdd]*65536)
-        log.debug("set all registers to 0x00")
-        ir = ModbusSequentialDataBlock.create()
+        log.debug("Initialize input registers")
+        if isinstance(input_registers, dict) and input_registers:
+            # log.debug('using dictionary from configuration file:')
+            # log.debug(inputRegisters)
+            ir = ModbusSparseDataBlock(input_registers)
+        else:
+            # log.debug('set all registers to 0xdd')
+            # ir = ModbusSequentialDataBlock(0x00, [0xdd]*65536)
+            log.debug("set all registers to 0x00")
+            ir = ModbusSequentialDataBlock.create()
 
     store = ModbusSlaveContext(di=di, co=co, hr=hr, ir=ir, zero_mode=zero_mode)
 
@@ -331,4 +335,5 @@ if __name__ == "__main__":
         coils=configured_coils,
         holding_registers=configured_holding_registers,
         input_registers=configured_input_registers,
+        mirror_holding_registers_as_inputs=CONFIG["server"]["mirror_holding_registers_as_inputs"]
     )
